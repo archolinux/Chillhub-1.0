@@ -32,7 +32,6 @@
             z-index: 10;
         }
 
-        /* Top Screen: The Snake Arcade Console */
         .arcade-container {
             background-color: rgba(20, 20, 20, 0.9); 
             border: 3px solid #ff66b2; 
@@ -47,7 +46,6 @@
         .score { color: #fff; font-size: 1.3rem; font-weight: bold; }
         .instructions { color: #a0a0c0; font-size: 0.85rem; margin-top: 5px; }
 
-        /* Bottom Screen: The Web Portal Dashboard */
         .portal-container {
             background-color: rgba(20, 20, 20, 0.9);
             border: 3px solid #ff66b2;
@@ -104,23 +102,18 @@
         </span>
     </div>
     
-    <!-- Top Arena: Snake Game Console -->
     <div class="arcade-container">
         <div class="score">Score: <span id="score-val">0</span></div>
         <canvas id="snakeGame" width="400" height="300"></canvas>
         <div class="instructions">Use Arrow Keys to play Snake up here!</div>
     </div>
 
-    <!-- Bottom Arena: True Web Port Dashboard -->
     <div class="portal-container">
         <div class="portal-menu">
-            <!-- These specialized web ports are open-source game frames designed to load everywhere -->
-            <button onclick="loadPortalSite('https://gityb.com')">🕹️ Unblocked Proxy Port</button>
-            <button onclick="loadPortalSite('https://minecraft.net')">🧱 Minecraft Classic Port</button>
-            <button onclick="loadPortalSite('https://archive.org')">🍒 Pac-Man Port</button>
+            <button onclick="loadPortalSite('https://gityb.com')">🕹️ Game Portal 1</button>
+            <button onclick="loadPortalSite('https://minecraft.net')">🧱 Minecraft Classic</button>
         </div>
         <div class="frame-wrapper">
-            <!-- The secure embedded window -->
             <iframe id="portal-iframe" src="about:blank" allowfullscreen></iframe>
         </div>
     </div>
