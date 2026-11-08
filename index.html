@@ -31,7 +31,6 @@
             z-index: 10;
         }
 
-        /* Top control panel for navigation */
         .control-panel {
             background-color: rgba(20, 20, 20, 0.85); border: 2px solid #333333; border-radius: 8px;
             padding: 10px 20px; width: 80%; max-width: 600px; text-align: center; display: flex; justify-content: space-around; align-items: center;
@@ -39,11 +38,10 @@
         }
         .control-panel button {
             background-color: #ff66b2; color: white; border: none; padding: 10px 15px;
-            font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; width: 30%;
+            font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; width: 45%;
         }
         .control-panel button:hover { background-color: #ff3399; }
 
-        /* The embedded game screen arena */
         .game-frame-container {
             width: 90%;
             height: 65vh;
@@ -61,7 +59,6 @@
         }
     </style>
     <script>
-        // Special function to change the embedded page without opening a new tab
         function launchSite(url) {
             document.getElementById('portal-screen').src = url;
         }
@@ -77,16 +74,14 @@
         </span>
     </div>
     
-    <!-- Navigation bar at the top -->
     <div class="control-panel">
-        <button onclick="launchSite('https://mit.edu')">Scratch Games</button>
-        <button onclick="launchSite('https://crazygames.com')">Line Rider</button>
-        <button onclick="launchSite('https://youtube.com')">Test Video</button>
+        <button onclick="launchSite('https://archive.org')">🎮 Pac-Man Game</button>
+        <!-- This embeds a public sample video that works safely in iframe screens -->
+        <button onclick="launchSite('https://w3schools.com')">📺 Play Test Video</button>
     </div>
 
-    <!-- The secret built-in window that school filters won't detect as a new tab -->
     <div class="game-frame-container">
-        <iframe id="portal-screen" src="about:blank"></iframe>
+        <iframe id="portal-screen" src="about:blank" allowfullscreen></iframe>
     </div>
 
 </body>
