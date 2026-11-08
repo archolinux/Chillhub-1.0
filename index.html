@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chill Hub Arcade & Portal</title>
+    <title>Chill Hub v1.1 - Arcade Dashboard</title>
     <style>
         body {
             margin: 0; padding: 0;
@@ -31,7 +31,7 @@
             z-index: 10;
         }
 
-        /* Container styling for the active terminal */
+        /* The Arcade Cabinet Console Box */
         .arcade-container {
             background-color: rgba(20, 20, 20, 0.9); 
             border: 3px solid #ff66b2; 
@@ -42,6 +42,15 @@
             width: 420px;
         }
 
+        .screen-title {
+            color: #ff007f;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         canvas {
             background-color: #111;
             border: 2px solid #333;
@@ -49,13 +58,13 @@
             margin: 10px auto;
         }
 
-        .score {
+        .score-board {
             color: #fff;
             font-size: 1.3rem;
             font-weight: bold;
         }
 
-        /* Navigation block underneath the screen */
+        /* Version 1.1 App Switching Menu */
         .portal-menu {
             margin-top: 15px;
             display: flex;
@@ -67,17 +76,38 @@
             background-color: #ff66b2;
             color: white;
             border: none;
-            padding: 8px 12px;
+            padding: 10px 12px;
             font-weight: bold;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             border-radius: 4px;
             cursor: pointer;
             flex: 1;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
 
         .portal-menu button:hover {
             background-color: #ff3399;
+            transform: scale(1.02);
+        }
+
+        .portal-menu button.active {
+            background-color: #00ffcc;
+            color: #111;
+        }
+
+        .instructions {
+            color: #a0a0c0;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* Mobile Responsive Scale Rule */
+        @media (max-width: 600px) {
+            .logo-container { font-size: 2.5rem; margin-bottom: 20px; }
+            .highlight { padding: 0px 15px; margin-left: 8px; }
+            .dancing-skeleton { width: 55px; top: -50px; }
+            .arcade-container { width: 90vw; padding: 10px; }
+            canvas { width: 100% !important; height: auto !important; }
         }
     </style>
 </head>
@@ -86,51 +116,92 @@
     <div class="logo-container">
         Chill 
         <span class="highlight">
-            Hub
+            Hub <small style="font-size: 1rem; vertical-align: super; color: #111;">v1.1</small>
             <img src="skeleton.gif" alt="Skeleton" class="dancing-skeleton">
         </span>
     </div>
     
     <div class="arcade-container">
-        <div class="score">Score: <span id="score-val">0</span></div>
-        <canvas id="snakeGame" width="400" height="350"></canvas>
+        <div class="screen-title" id="game-title">Snake Arcade</div>
+        <div class="score-board" id="score-display">Score: <span id="score-val">0</span></div>
         
-        <!-- The Web Portal Navigation Buttons -->
+        <!-- Interactive Game Canvas -->
+        <canvas id="arcadeCanvas" width="400" height="350"></canvas>
+        
+        <div class="instructions" id="game-help">Use Arrow Keys to control the snake!</div>
+
+        <!-- The App Portal Navigation Buttons -->
         <div class="portal-menu">
-            <button onclick="alert('Launching custom game logic...')">🎮 App 2</button>
-            <button onclick="alert('Launching custom game logic...')">🕹️ App 3</button>
+            <button id="btn-snake" class="active" onclick="switchGame('snake')">🐍 Snake Game</button>
+            <button id="btn-soccer" onclick="switchGame('soccer')">⚽️ Soccer Pro</button>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById("snakeGame");
+        const canvas = document.getElementById("arcadeCanvas");
         const ctx = canvas.getContext("2d");
-        const grid = 20;
-        let count = 0;
+        
+        let activeGame = 'snake';
+        let animationId;
+        let gameCount = 0;
         let score = 0;
-        
-        let snake = {
-            x: 160, y: 160,
-            dx: grid, dy: 0,
-            cells: [{x: 160, y: 160}, {x: 140, y: 160}],
-            maxCells: 4
-        };
-        
+
+        // --- SNAKE ENGINE DATA ---
+        const grid = 20;
+        let snake = { x: 160, y: 160, dx: grid, dy: 0, cells: [{x:160, y:160}, {x:140, y:160}], maxCells: 4 };
         let apple = { x: 320, y: 240 };
 
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min)) + min;
+        // --- SOCCER ENGINE DATA ---
+        let player = { x: 50, y: 150, width: 15, height: 60, score: 0 };
+        let goalie = { x: 335, y: 150, width: 15, height: 60, speed: 2 };
+        let ball = { x: 200, y: 175, radius: 8, dx: 3, dy: 2 };
+
+        function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
+
+        // Core App Routing Engine
+        function switchGame(gameName) {
+            activeGame = gameName;
+            score = 0;
+            player.score = 0;
+            goalie.score = 0;
+            
+            document.getElementById('btn-snake').classList.remove('active');
+            document.getElementById('btn-soccer').classList.remove('active');
+            
+            if (gameName === 'snake') {
+                document.getElementById('btn-snake').classList.add('active');
+                document.getElementById('game-title').innerText = "Snake Arcade";
+                document.getElementById('score-display').innerHTML = 'Score: <span id="score-val">0</span>';
+                document.getElementById('game-help').innerText = "Use Arrow Keys to control the snake!";
+                // Reset Snake
+                snake.x = 160; snake.y = 160; snake.dx = grid; snake.dy = 0;
+                snake.cells = [{x:160, y:160}, {x:140, y:160}]; snake.maxCells = 4;
+            } else {
+                document.getElementById('btn-soccer').classList.add('active');
+                document.getElementById('game-title').innerText = "Soccer Penalty Pro";
+                document.getElementById('score-display').innerHTML = 'Player: <span id="p-score">0</span> | Goalie: <span id="g-score">0</span>';
+                document.getElementById('game-help').innerText = "Use UP and DOWN Arrow keys to block or strike!";
+                // Reset Ball
+                ball.x = 200; ball.y = 175; ball.dx = 3; ball.dy = 2;
+            }
         }
 
-        function loop() {
-            requestAnimationFrame(loop);
-            if (++count < 6) return;
-            count = 0;
+        // Master Animation Engine
+        function mainLoop() {
+            animationId = requestAnimationFrame(mainLoop);
             
+            if (activeGame === 'snake') {
+                if (++gameCount < 6) return;
+                gameCount = 0;
+                runSnake();
+            } else {
+                runSoccer();
+            }
+        }
+
+        function runSnake() {
             ctx.clearRect(0,0,canvas.width,canvas.height);
-            
-            snake.x += snake.dx;
-            snake.y += snake.dy;
+            snake.x += snake.dx; snake.y += snake.dy;
             
             if (snake.x < 0) snake.x = canvas.width - grid;
             else if (snake.x >= canvas.width) snake.x = 0;
@@ -146,7 +217,6 @@
             ctx.fillStyle = '#00ffcc';
             snake.cells.forEach(function(cell, index) {
                 ctx.fillRect(cell.x, cell.y, grid-1, grid-1);  
-                
                 if (cell.x === apple.x && cell.y === apple.y) {
                     snake.maxCells++;
                     score += 10;
@@ -154,28 +224,92 @@
                     apple.x = getRandomInt(0, 20) * grid;
                     apple.y = getRandomInt(0, 17) * grid;
                 }
-                
                 for (let i = index + 1; i < snake.cells.length; i++) {
                     if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-                        snake.x = 160; snake.y = 160;
-                        snake.cells = [{x: 160, y: 160}, {x: 140, y: 160}];
-                        snake.maxCells = 4;
-                        snake.dx = grid; snake.dy = 0;
-                        score = 0;
-                        document.getElementById('score-val').innerText = score;
+                        switchGame('snake');
                     }
                 }
             });
         }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.which === 37 && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
-            else if (e.which === 38 && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
-            else if (e.which === 39 && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
-            else if (e.which === 40 && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
-        });
+        function runSoccer() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            
+            // Draw Pitch Outlines
+            ctx.strokeStyle = "rgba(255,255,255,0.2)";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 10);
+            ctx.lineTo(canvas.width / 2, canvas.height - 10);
+            ctx.stroke();
 
-        requestAnimationFrame(loop);
-    </script>
-</body>
-</html>
+            // Move Ball
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Wall Bounces
+            if (ball.y - ball.radius < 10 || ball.y + ball.radius > canvas.height - 10) {
+                ball.dy = -ball.dy;
+            }
+
+            // Simple Smart AI Goalie Logic
+            if (goalie.y + goalie.height/2 < ball.y) goalie.y += goalie.speed;
+            else goalie.y -= goalie.speed;
+            
+            // Limit Goalie bounds
+            if (goalie.y < 10) goalie.y = 10;
+            if (goalie.y > canvas.height - 10 - goalie.height) goalie.y = canvas.height - 10 - goalie.height;
+
+            // Collisions with Player Paddle
+            if (ball.x - ball.radius < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height) {
+                ball.dx = -ball.dx;
+ball.x = player.x + player.width + ball.radius;
+}
+// Collisions with Goalie Paddle
+if (ball.x + ball.radius > goalie.x && ball.y > goalie.y && ball.y < goalie.y + goalie.height) {
+ball.dx = -ball.dx;
+ball.x = goalie.x - ball.radius;
+}
+// Score Logic (Goals)
+if (ball.x < 0) {
+goalie.score++;
+document.getElementById('g-score').innerText = goalie.score;
+resetBall();
+} else if (ball.x > canvas.width) {
+player.score++;
+document.getElementById('p-score').innerText = player.score;
+resetBall();
+}
+// Draw Player (Left Striker)
+ctx.fillStyle = '#ff66b2';
+ctx.fillRect(player.x, player.y, player.width, player.height);
+// Draw Goalie (Right Guard)
+ctx.fillStyle = '#00ffcc';
+ctx.fillRect(goalie.x, goalie.y, goalie.width, goalie.height);
+// Draw Soccer Ball
+ctx.fillStyle = '#ffffff';
+ctx.beginPath();
+ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+ctx.fill();
+}
+function resetBall() {
+ball.x = 200;
+ball.y = 175;
+ball.dx = -ball.dx;
+}
+// Global Event Controls Mapping
+document.addEventListener('keydown', function(e) {
+if (activeGame === 'snake') {
+if (e.which === 37 && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
+else if (e.which === 38 && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
+else if (e.which === 39 && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
+else if (e.which === 40 && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
+} else {
+// Soccer Striker Control Rules
+if (e.which === 38) { player.y -= 20; if (player.y < 10) player.y = 10; }
+else if (e.which === 40) { player.y += 20; if (player.y > canvas.height - 10 - player.height) player.y = canvas.height - 10 - player.height; }
+}
+});
+// Fire up layout engine loop
+mainLoop();
