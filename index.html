@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chill Hub v1.2 - Master Arcade Portal</title>
+    <title>Chill Hub v1.3 - System Dashboard</title>
     <style>
         body {
             margin: 0; padding: 0;
@@ -32,7 +32,7 @@
             z-index: 10;
         }
 
-        /* Top Arena Screen: Snake Cabinet */
+        /* Top Module Console */
         .arcade-container {
             background-color: rgba(20, 20, 20, 0.9); 
             border: 3px solid #ff66b2; 
@@ -45,18 +45,18 @@
         }
         canvas { background-color: #111; border: 2px solid #333; display: block; margin: 10px auto; }
         .score { color: #fff; font-size: 1.3rem; font-weight: bold; }
-        .instructions { color: #a0a0c0; font-size: 0.85rem; margin-top: 5px; }
 
-        /* Bottom Arena Screen: Web Portal Cabinet */
+        /* Bottom Module Console: Custom Web Ports */
         .portal-container {
             background-color: rgba(20, 20, 20, 0.9);
             border: 3px solid #ff66b2;
             border-radius: 12px;
             padding: 15px;
             width: 90%;
-            max-width: 800px;
+            max-width: 650px;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
             text-align: center;
+            color: white;
         }
         .portal-menu {
             display: flex;
@@ -71,97 +71,178 @@
             transition: background 0.2s;
         }
         .portal-menu button:hover { background-color: #ff3399; }
+        .portal-menu button.active { background-color: #00ffcc; color: #111; }
         
-        .frame-wrapper {
+        .utility-screen {
             width: 100%;
-            height: 480px;
+            height: 320px;
             background-color: #111;
             border: 2px solid #333;
             border-radius: 6px;
-            overflow: hidden;
+            padding: 15px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            text-align: left;
+            display: none;
         }
-        iframe { width: 100%; height: 100%; border: none; }
+        .utility-screen.active { display: block; }
 
-        @media (max-width: 600px) {
-            .logo-container { font-size: 2.5rem; }
-            .arcade-container { width: 90vw; }
-            .frame-wrapper { height: 320px; }
+        /* Custom Mini App Styles */
+        input[type="text"], textarea {
+            width: 100%; padding: 10px; background: #222; border: 1px solid #444; 
+            color: white; border-radius: 4px; box-sizing: border-box; margin-bottom: 10px; font-size: 1rem;
         }
+        .app-btn {
+            background-color: #00ffcc; color: #111; border: none; padding: 8px 15px;
+            font-weight: bold; border-radius: 4px; cursor: pointer;
+        }
+        #paintCanvas { background: #fff; cursor: crosshair; display: block; margin: 0 auto; border-radius: 4px; }
     </style>
-    <script>
-        function loadPortalSite(url) {
-            document.getElementById('portal-iframe').src = url;
-        }
-    </script>
 </head>
 <body>
 
-    <!-- Main Title Layout Box -->
     <div class="logo-container">
         Chill 
         <span class="highlight">
-            Hub <small style="font-size: 1rem; vertical-align: super; color: #111;">v1.2</small>
+            Hub <small style="font-size: 1rem; vertical-align: super; color: #111;">v1.3</small>
             <img src="skeleton.gif" alt="Skeleton" class="dancing-skeleton">
         </span>
     </div>
     
-    <!-- Top Display: Active Snake Console -->
+    <!-- Top Console Module: Snake Game -->
     <div class="arcade-container">
-        <div class="score">Score: <span id="score-val">0</span></div>
-        <canvas id="snakeGame" width="400" height="300"></canvas>
-        <div class="instructions">Use Arrow Keys to play Snake up here!</div>
+        <div class="score">Snake Game Console: <span id="score-val">0</span></div>
+        <canvas id="snakeGame" width="400" height="220"></canvas>
     </div>
 
-    <!-- Bottom Display: Open-Source Game Frame Loader -->
+    <!-- Bottom Console Module: True Functional App Ports -->
     <div class="portal-container">
         <div class="portal-menu">
-            <button onclick="loadPortalSite('https://archive.org')">🍒 Pac-Man Arcade</button>
-            <button onclick="loadPortalSite('https://archive.org')">🦔 Sonic 1 Retro</button>
+            <button id="tab-search" class="active" onclick="openPort('search')">🌐 Search Port</button>
+            <button id="tab-notes" onclick="openPort('notes')">📝 Notes Port</button>
+            <button id="tab-paint" onclick="openPort('paint')">🎨 Sketch Port</button>
         </div>
-        <div class="frame-wrapper">
-            <iframe id="portal-iframe" src="about:blank" allowfullscreen></iframe>
+
+        <!-- 1. WIKIPEDIA WEB ENGINE SEARCH PORT -->
+        <div id="port-search" class="utility-screen active">
+            <p style="margin-top:0; color:#00ffcc; font-weight:bold;">Local Encyclopedia Web Proxy Pipeline</p>
+            <input type="text" id="search-query" placeholder="Type a topic (e.g., Gaming, Minecraft, Space)...">
+            <button class="app-btn" onclick="fetchWikiData()">Run Search Stream</button>
+            <div id="search-results" style="margin-top:15px; font-size:0.95rem; line-height:1.4; color:#d0d0e0;"></div>
+        </div>
+
+        <!-- 2. DATA SAVER SCRATCHPAD NOTES PORT -->
+        <div id="port-notes" class="utility-screen">
+            <p style="margin-top:0; color:#00ffcc; font-weight:bold;">Encrypted Text Storage Terminal</p>
+            <textarea id="notepad-area" rows="6" placeholder="Write down logs, codes, or reminders here..."></textarea>
+            <button class="app-btn" onclick="saveLocalNotes()">Commit to Disk</button>
+            <span id="save-status" style="margin-left:10px; color:#ff66b2; font-size:0.9rem;"></span>
+        </div>
+
+        <!-- 3. INTERACTIVE DRAWING COMPONENT PORT -->
+        <div id="port-paint" class="utility-screen">
+            <p style="margin-top:0; color:#00ffcc; font-weight:bold; margin-bottom:5px;">Pixel Workspace Pad</p>
+            <canvas id="paintCanvas" width="580" height="230"></canvas>
         </div>
     </div>
 
     <script>
-        // --- SNAKE ARCADE GAME RUNTIME ENGINE ---
-        const canvas = document.getElementById("snakeGame");
-        const ctx = canvas.getContext("2d");
+        // --- MULTI-PORT INTERACTIVE SYSTEM ---
+        function openPort(portName) {
+            document.querySelectorAll('.utility-screen').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.portal-menu button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('port-' + portName).classList.add('active');
+            document.getElementById('tab-' + portName).classList.add('active');
+            if(portName === 'paint') initPaint();
+        }
+
+        // 1. Wikipedia Fetching Stream Engine Logic
+        function fetchWikiData() {
+            const query = document.getElementById('search-query').value.trim();
+            const resultsBox = document.getElementById('search-results');
+            if(!query) return;
+            resultsBox.innerText = "Connecting to pipeline database stream...";
+            
+            // Reaches out cleanly via open JSON API format 
+            fetch(`https://wikipedia.org{encodeURIComponent(query)}`)
+                .then(res => {
+                    if(!res.ok) throw new Error();
+                    return res.json();
+                })
+                .then(data => {
+                    resultsBox.innerHTML = `<strong>${data.title}</strong>: ${data.extract}`;
+                })
+                .catch(() => {
+                    resultsBox.innerHTML = `<span style="color:#ff3366;">Data channel error. Topic summary not located in index.</span>`;
+                });
+        }
+
+        // 2. Local Storage Workspace Memo System
+        document.getElementById('notepad-area').value = localStorage.getItem('chillhub_notes') || '';
+        function saveLocalNotes() {
+            const text = document.getElementById('notepad-area').value;
+            localStorage.setItem('chillhub_notes', text);
+            const status = document.getElementById('save-status');
+            status.innerText = "Saved successfully!";
+            setTimeout(() => status.innerText = "", 2000);
+        }
+
+        // 3. Canvas Pixel Workspace Drawer Engine
+        let paintInited = false;
+        function initPaint() {
+            if(paintInited) return;
+            paintInited = true;
+            const pCanvas = document.getElementById('paintCanvas');
+            const pCtx = pCanvas.getContext('2d');
+            let drawing = false;
+            pCtx.fillStyle = "#ffffff"; pCtx.fillRect(0,0,pCanvas.width,pCanvas.height);
+
+            pCanvas.addEventListener('mousedown', () => drawing = true);
+            pCanvas.addEventListener('mouseup', () => { drawing = false; pCtx.beginPath(); });
+            pCanvas.addEventListener('mousemove', draw);
+
+            function draw(e) {
+                if(!drawing) return;
+                pCtx.lineWidth = 4; pCtx.lineCap = 'round'; pCtx.strokeStyle = '#ff66b2';
+                const rect = pCanvas.getBoundingClientRect();
+                pCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                pCtx.stroke(); pCtx.beginPath(); pCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            }
+        }
+
+        // --- CORE SNAKE GAME ENGINE RUNTIME ---
+        const canvas = document.getElementById("snakeGame"); const ctx = canvas.getContext("2d");
         const grid = 20; let count = 0; let score = 0;
         let snake = { x: 160, y: 160, dx: grid, dy: 0, cells: [{x: 160, y: 160}, {x: 140, y: 160}], maxCells: 4 };
-        let apple = { x: 320, y: 200 };
+        let apple = { x: 320, y: 160 };
         function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
         function loop() {
             requestAnimationFrame(loop); if (++count < 6) return; count = 0;
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            snake.x += snake.dx; snake.y += snake.dy;
-            if (snake.x < 0) snake.x = canvas.width - grid; else if (snake.x >= canvas.width) snake.x = 0;
-            if (snake.y < 0) snake.y = canvas.height - grid; else if (snake.y >= canvas.height) snake.y = 0;
-            snake.cells.unshift({x: snake.x, y: snake.y}); if (snake.cells.length > snake.maxCells) snake.cells.pop();
-            ctx.fillStyle = '#ff3366'; ctx.fillRect(apple.x, apple.y, grid-1, grid-1);
-            ctx.fillStyle = '#00ffcc';
-            snake.cells.forEach(function(cell, index) {
-                ctx.fillRect(cell.x, cell.y, grid-1, grid-1);  
-                if (cell.x === apple.x && cell.y === apple.y) {
-                    snake.maxCells++; score += 10; document.getElementById('score-val').innerText = score;
-                    apple.x = getRandomInt(0, 20) * grid; apple.y = getRandomInt(0, 15) * grid;
-                }
-                for (let i = index + 1; i < snake.cells.length; i++) {
-                    if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-                        snake.x = 160; snake.y = 160; snake.cells = [{x: 160, y: 160}, {x: 140, y: 160}];
-                        snake.maxCells = 4; snake.dx = grid; snake.dy = 0; score = 0;
-                        document.getElementById('score-val').innerText = score;
-                    }
-                }
-            });
-        }
-        document.addEventListener('keydown', function(e) {
-            if (e.which === 37 && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
-            else if (e.which === 38 && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
-            else if (e.which === 39 && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
-            else if (e.which === 40 && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
-        });
-        requestAnimationFrame(loop);
-    </script>
-</body>
-</html>
+ctx.clearRect(0,0,canvas.width,canvas.height); snake.x += snake.dx; snake.y += snake.dy;
+if (snake.x < 0) snake.x = canvas.width - grid; else if (snake.x >= canvas.width) snake.x = 0;
+if (snake.y < 0) snake.y = canvas.height - grid; else if (snake.y >= canvas.height) snake.y = 0;
+snake.cells.unshift({x: snake.x, y: snake.y}); if (snake.cells.length > snake.maxCells) snake.cells.pop();
+ctx.fillStyle = '#ff3366'; ctx.fillRect(apple.x, apple.y, grid-1, grid-1); ctx.fillStyle = '#00ffcc';
+snake.cells.forEach(function(cell, index) {
+ctx.fillRect(cell.x, cell.y, grid-1, grid-1);
+if (cell.x === apple.x && cell.y === apple.y) {
+snake.maxCells++; score += 10; document.getElementById('score-val').innerText = score;
+apple.x = getRandomInt(0, 20) * grid; apple.y = getRandomInt(0, 11) * grid;
+}
+for (let i = index + 1; i < snake.cells.length; i++) {
+if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+snake.x = 160; snake.y = 160; snake.cells = [{x: 160, y: 160}, {x: 140, y: 160}];
+snake.maxCells = 4; snake.dx = grid; snake.dy = 0; score = 0; document.getElementById('score-val').innerText = score;
+}
+}
+});
+}
+document.addEventListener('keydown', function(e) {
+if(document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+if (e.which === 37 && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
+else if (e.which === 38 && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
+else if (e.which === 39 && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
+else if (e.which === 40 && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
+});
+requestAnimationFrame(loop);
