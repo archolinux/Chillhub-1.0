@@ -1,4 +1,4 @@
-ml>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,42 +6,56 @@ ml>
     <title>Chill Hub v1.1 - Arcade Dashboard</title>
     <style>
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('bg.gif') no-repeat center center fixed;
             background-size: cover;
             height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
-        }
-        
-        .logo-container {
-            font-family: 'Brush Script MT', cursive, sans-serif;
-            font-size: 4rem; font-style: italic; color: #ffffff;
-            margin-bottom: 5px; display: flex; align-items: center; justify-content: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
             position: relative;
         }
-        .highlight { background-color: #ff66b2; padding: 0px 25px; border-radius: 12px; margin-left: 15px; position: relative; }
-        
+        .logo-container {
+            font-family: 'Brush Script MT', cursive, sans-serif;
+            font-size: 4rem;
+            font-style: italic;
+            color: #ffffff;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .highlight {
+            background-color: #ff66b2;
+            padding: 0px 25px;
+            border-radius: 12px;
+            margin-left: 15px;
+            position: relative;
+        }
         .dancing-skeleton {
             position: absolute;
-            top: -65px; left: 50%;
+            top: -65px;
+            left: 50%;
             transform: translateX(-50%);
-            width: 75px; height: auto;
+            width: 75px;
+            height: auto;
             z-index: 10;
         }
-
         /* The Arcade Cabinet Console Box */
         .arcade-container {
-            background-color: rgba(20, 20, 20, 0.9); 
-            border: 3px solid #ff66b2; 
+            background-color: rgba(20, 20, 20, 0.9);
+            border: 3px solid #ff66b2;
             border-radius: 12px;
-            padding: 15px; 
+            padding: 15px;
             text-align: center;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
             width: 420px;
         }
-
         .screen-title {
             color: #ff007f;
             font-size: 1.2rem;
@@ -50,20 +64,17 @@ ml>
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-
         canvas {
             background-color: #111;
             border: 2px solid #333;
             display: block;
             margin: 10px auto;
         }
-
         .score-board {
             color: #fff;
             font-size: 1.3rem;
             font-weight: bold;
         }
-
         /* Version 1.1 App Switching Menu */
         .portal-menu {
             margin-top: 15px;
@@ -71,7 +82,6 @@ ml>
             justify-content: space-between;
             gap: 10px;
         }
-
         .portal-menu button {
             background-color: #ff66b2;
             color: white;
@@ -84,63 +94,63 @@ ml>
             flex: 1;
             transition: background 0.2s, transform 0.1s;
         }
-
         .portal-menu button:hover {
             background-color: #ff3399;
             transform: scale(1.02);
         }
-
         .portal-menu button.active {
             background-color: #00ffcc;
             color: #111;
         }
-
         .instructions {
             color: #a0a0c0;
             font-size: 0.85rem;
             margin-top: 5px;
         }
-
         /* Mobile Responsive Scale Rule */
         @media (max-width: 600px) {
-            .logo-container { font-size: 2.5rem; margin-bottom: 20px; }
-            .highlight { padding: 0px 15px; margin-left: 8px; }
-            .dancing-skeleton { width: 55px; top: -50px; }
-            .arcade-container { width: 90vw; padding: 10px; }
-            canvas { width: 100% !important; height: auto !important; }
+            .logo-container {
+                font-size: 2.5rem;
+                margin-bottom: 20px;
+            }
+            .highlight {
+                padding: 0px 15px;
+                margin-left: 8px;
+            }
+            .dancing-skeleton {
+                width: 55px;
+                top: -50px;
+            }
+            .arcade-container {
+                width: 90vw;
+                padding: 10px;
+            }
+            canvas {
+                width: 100% !important;
+                height: auto !important;
+            }
         }
     </style>
 </head>
 <body>
-
     <div class="logo-container">
-        Chill 
-        <span class="highlight">
-            Hub <small style="font-size: 1rem; vertical-align: super; color: #111;">v1.1</small>
-            <img src="skeleton.gif" alt="Skeleton" class="dancing-skeleton">
-        </span>
+        Chill <span class="highlight"> Hub <small style="font-size: 1rem; vertical-align: super; color: #111;">v1.1</small> <img src="skeleton.gif" alt="Skeleton" class="dancing-skeleton"> </span>
     </div>
-    
     <div class="arcade-container">
         <div class="screen-title" id="game-title">Snake Arcade</div>
         <div class="score-board" id="score-display">Score: <span id="score-val">0</span></div>
-        
         <!-- Interactive Game Canvas -->
         <canvas id="arcadeCanvas" width="400" height="350"></canvas>
-        
         <div class="instructions" id="game-help">Use Arrow Keys to control the snake!</div>
-
         <!-- The App Portal Navigation Buttons -->
         <div class="portal-menu">
             <button id="btn-snake" class="active" onclick="switchGame('snake')">🐍 Snake Game</button>
             <button id="btn-soccer" onclick="switchGame('soccer')">⚽️ Soccer Pro</button>
         </div>
     </div>
-
     <script>
         const canvas = document.getElementById("arcadeCanvas");
         const ctx = canvas.getContext("2d");
-        
         let activeGame = 'snake';
         let animationId;
         let gameCount = 0;
@@ -156,7 +166,9 @@ ml>
         let goalie = { x: 335, y: 150, width: 15, height: 60, speed: 2 };
         let ball = { x: 200, y: 175, radius: 8, dx: 3, dy: 2 };
 
-        function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
 
         // Core App Routing Engine
         function switchGame(gameName) {
@@ -164,7 +176,6 @@ ml>
             score = 0;
             player.score = 0;
             goalie.score = 0;
-            
             document.getElementById('btn-snake').classList.remove('active');
             document.getElementById('btn-soccer').classList.remove('active');
             
@@ -174,22 +185,28 @@ ml>
                 document.getElementById('score-display').innerHTML = 'Score: <span id="score-val">0</span>';
                 document.getElementById('game-help').innerText = "Use Arrow Keys to control the snake!";
                 // Reset Snake
-                snake.x = 160; snake.y = 160; snake.dx = grid; snake.dy = 0;
-                snake.cells = [{x:160, y:160}, {x:140, y:160}]; snake.maxCells = 4;
+                snake.x = 160;
+                snake.y = 160;
+                snake.dx = grid;
+                snake.dy = 0;
+                snake.cells = [{x:160, y:160}, {x:140, y:160}];
+                snake.maxCells = 4;
             } else {
                 document.getElementById('btn-soccer').classList.add('active');
                 document.getElementById('game-title').innerText = "Soccer Penalty Pro";
                 document.getElementById('score-display').innerHTML = 'Player: <span id="p-score">0</span> | Goalie: <span id="g-score">0</span>';
                 document.getElementById('game-help').innerText = "Use UP and DOWN Arrow keys to block or strike!";
                 // Reset Ball
-                ball.x = 200; ball.y = 175; ball.dx = 3; ball.dy = 2;
+                ball.x = 200;
+                ball.y = 175;
+                ball.dx = 3;
+                ball.dy = 2;
             }
         }
 
         // Master Animation Engine
         function mainLoop() {
             animationId = requestAnimationFrame(mainLoop);
-            
             if (activeGame === 'snake') {
                 if (++gameCount < 6) return;
                 gameCount = 0;
@@ -201,7 +218,8 @@ ml>
 
         function runSnake() {
             ctx.clearRect(0,0,canvas.width,canvas.height);
-            snake.x += snake.dx; snake.y += snake.dy;
+            snake.x += snake.dx;
+            snake.y += snake.dy;
             
             if (snake.x < 0) snake.x = canvas.width - grid;
             else if (snake.x >= canvas.width) snake.x = 0;
@@ -216,7 +234,7 @@ ml>
             
             ctx.fillStyle = '#00ffcc';
             snake.cells.forEach(function(cell, index) {
-                ctx.fillRect(cell.x, cell.y, grid-1, grid-1);  
+                ctx.fillRect(cell.x, cell.y, grid-1, grid-1);
                 if (cell.x === apple.x && cell.y === apple.y) {
                     snake.maxCells++;
                     score += 10;
@@ -234,7 +252,6 @@ ml>
 
         function runSoccer() {
             ctx.clearRect(0,0,canvas.width,canvas.height);
-            
             // Draw Pitch Outlines
             ctx.strokeStyle = "rgba(255,255,255,0.2)";
             ctx.lineWidth = 2;
@@ -243,29 +260,16 @@ ml>
             ctx.moveTo(canvas.width / 2, 10);
             ctx.lineTo(canvas.width / 2, canvas.height - 10);
             ctx.stroke();
-
+            
             // Move Ball
             ball.x += ball.dx;
             ball.y += ball.dy;
-
+            
             // Wall Bounces
             if (ball.y - ball.radius < 10 || ball.y + ball.radius > canvas.height - 10) {
                 ball.dy = -ball.dy;
             }
-
-            // Simple Smart AI Goalie Logic
-            if (goalie.y + goalie.height/2 < ball.y) goalie.y += goalie.speed;
-            else goalie.y -= goalie.speed;
-            
-            // Limit Goalie bounds
-            if (goalie.y < 10) goalie.y = 10;
-            if (goalie.y > canvas.height - 10 - goalie.height) goalie.y = canvas.height - 10 - goalie.height;
-
-            // Collisions with Player Paddle
-            if (ball.x - ball.radius < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height) {
-                ball.dx = -ball.dx;
-Use code with caution.
-ball.x = player.x + player.width + ball.radius;
+            ball.x = player.x + player.width + ball.radius;
 }
 // Collisions with Goalie Paddle
 if (ball.x + ball.radius > goalie.x && ball.y > goalie.y && ball.y < goalie.y + goalie.height) {
