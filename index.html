@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chill Hub v1.2 - Arcade & Web Portal</title>
+    <title>Chill Hub v1.2 - Arcade Dashboard</title>
     <style>
         body {
             margin: 0; padding: 0;
@@ -32,6 +32,7 @@
             z-index: 10;
         }
 
+        /* Top Arena Console */
         .arcade-container {
             background-color: rgba(20, 20, 20, 0.9); 
             border: 3px solid #ff66b2; 
@@ -46,51 +47,33 @@
         .score { color: #fff; font-size: 1.3rem; font-weight: bold; }
         .instructions { color: #a0a0c0; font-size: 0.85rem; margin-top: 5px; }
 
-        .portal-container {
+        /* Bottom Arena Console: 100% Filter-Proof Clicker Game */
+        .clicker-container {
             background-color: rgba(20, 20, 20, 0.9);
             border: 3px solid #ff66b2;
             border-radius: 12px;
-            padding: 15px;
-            width: 90%;
-            max-width: 800px;
+            padding: 20px;
+            width: 420px;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
             text-align: center;
+            color: white;
         }
-        .portal-menu {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
+        .clicker-title { color: #00ffcc; font-size: 1.4rem; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
+        .big-cookie-btn {
+            background-color: #ff66b2; color: white; border: none; font-size: 4rem; 
+            width: 120px; height: 120px; border-radius: 50%; cursor: pointer; margin: 15px auto;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0px 5px 15px rgba(255, 102, 178, 0.4);
+            transition: transform 0.1s;
         }
-        .portal-menu button {
-            background-color: #ff66b2; color: white; border: none; padding: 10px 15px;
-            font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer;
-            transition: background 0.2s;
+        .big-cookie-btn:active { transform: scale(0.92); }
+        .clicker-score { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; }
+        .upgrade-btn {
+            background-color: #333; color: #00ffcc; border: 1px solid #00ffcc;
+            padding: 8px 12px; font-weight: bold; border-radius: 4px; cursor: pointer;
         }
-        .portal-menu button:hover { background-color: #ff3399; }
-        
-        .frame-wrapper {
-            width: 100%;
-            height: 450px;
-            background-color: #111;
-            border: 2px solid #333;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        iframe { width: 100%; height: 100%; border: none; }
-
-        @media (max-width: 600px) {
-            .logo-container { font-size: 2.5rem; }
-            .arcade-container { width: 90vw; }
-            .frame-wrapper { height: 300px; }
-        }
+        .upgrade-btn:hover { background-color: #00ffcc; color: #111; }
     </style>
-    <script>
-        function loadPortalSite(url) {
-            document.getElementById('portal-iframe').src = url;
-        }
-    </script>
 </head>
 <body>
 
@@ -102,23 +85,49 @@
         </span>
     </div>
     
+    <!-- Top Console: Snake -->
     <div class="arcade-container">
-        <div class="score">Score: <span id="score-val">0</span></div>
+        <div class="score">Snake Score: <span id="score-val">0</span></div>
         <canvas id="snakeGame" width="400" height="300"></canvas>
         <div class="instructions">Use Arrow Keys to play Snake up here!</div>
     </div>
 
-    <div class="portal-container">
-        <div class="portal-menu">
-            <button onclick="loadPortalSite('https://gityb.com')">🕹️ Game Portal 1</button>
-            <button onclick="loadPortalSite('https://minecraft.net')">🧱 Minecraft Classic</button>
+    <!-- Bottom Console: Filter-Proof Minecoin Clicker -->
+    <div class="clicker-container">
+        <div class="clicker-title">Minecoin Clicker</div>
+        <div class="clicker-score">Coins: <span id="coin-count">0</span></div>
+        <button class="big-cookie-btn" onclick="clickCookie()">⛏️</button>
+        <div style="margin-top: 10px;">
+            <button class="upgrade-btn" id="upgrade-btn-el" onclick="buyUpgrade()">Buy Super Pickaxe (Cost: 50)</button>
         </div>
-        <div class="frame-wrapper">
-            <iframe id="portal-iframe" src="about:blank" allowfullscreen></iframe>
-        </div>
+        <div class="instructions" style="margin-top: 10px;" id="upgrade-status">Multiplier: +1 per click</div>
     </div>
 
     <script>
+        // --- CLICKER GAME LOGIC ---
+        let coins = 0;
+        let multiplier = 1;
+        let upgradeCost = 50;
+
+        function clickCookie() {
+            coins += multiplier;
+            document.getElementById('coin-count').innerText = coins;
+        }
+
+        function buyUpgrade() {
+            if (coins >= upgradeCost) {
+                coins -= upgradeCost;
+                multiplier += 1;
+                upgradeCost = Math.floor(upgradeCost * 1.5);
+                document.getElementById('coin-count').innerText = coins;
+                document.getElementById('upgrade-btn-el').innerText = "Buy Super Pickaxe (Cost: " + upgradeCost + ")";
+                document.getElementById('upgrade-status').innerText = "Multiplier: +" + multiplier + " per click";
+            } else {
+                alert("Not enough coins yet! Keep mining!");
+            }
+        }
+
+        // --- SNAKE GAME LOGIC ---
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
         const grid = 20; let count = 0; let score = 0;
