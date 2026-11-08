@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chill Hub Arcade & Portal</title>
+    <title>Chill Hub v1.2 - Arcade & Web Portal</title>
     <style>
         body {
             margin: 0; padding: 0;
             font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('bg.gif') no-repeat center center fixed;
             background-size: cover;
-            height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            overflow-y: auto; padding: 20px 0;
+            box-sizing: border-box;
         }
         
         .logo-container {
@@ -31,7 +32,7 @@
             z-index: 10;
         }
 
-        /* Container styling for the active terminal */
+        /* Top Screen: The Snake Arcade Console */
         .arcade-container {
             background-color: rgba(20, 20, 20, 0.9); 
             border: 3px solid #ff66b2; 
@@ -40,141 +41,127 @@
             text-align: center;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
             width: 420px;
+            margin-bottom: 20px;
         }
+        canvas { background-color: #111; border: 2px solid #333; display: block; margin: 10px auto; }
+        .score { color: #fff; font-size: 1.3rem; font-weight: bold; }
+        .instructions { color: #a0a0c0; font-size: 0.85rem; margin-top: 5px; }
 
-        canvas {
-            background-color: #111;
-            border: 2px solid #333;
-            display: block;
-            margin: 10px auto;
+        /* Bottom Screen: The Web Portal Dashboard */
+        .portal-container {
+            background-color: rgba(20, 20, 20, 0.9);
+            border: 3px solid #ff66b2;
+            border-radius: 12px;
+            padding: 15px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.8);
+            text-align: center;
         }
-
-        .score {
-            color: #fff;
-            font-size: 1.3rem;
-            font-weight: bold;
-        }
-
-        /* Navigation block underneath the screen */
         .portal-menu {
-            margin-top: 15px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
         }
-
         .portal-menu button {
-            background-color: #ff66b2;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            font-weight: bold;
-            font-size: 0.85rem;
-            border-radius: 4px;
-            cursor: pointer;
-            flex: 1;
+            background-color: #ff66b2; color: white; border: none; padding: 10px 15px;
+            font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer;
             transition: background 0.2s;
         }
+        .portal-menu button:hover { background-color: #ff3399; }
+        
+        .frame-wrapper {
+            width: 100%;
+            height: 450px;
+            background-color: #111;
+            border: 2px solid #333;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        iframe { width: 100%; height: 100%; border: none; }
 
-        .portal-menu button:hover {
-            background-color: #ff3399;
+        @media (max-width: 600px) {
+            .logo-container { font-size: 2.5rem; }
+            .arcade-container { width: 90vw; }
+            .frame-wrapper { height: 300px; }
         }
     </style>
+    <script>
+        function loadPortalSite(url) {
+            document.getElementById('portal-iframe').src = url;
+        }
+    </script>
 </head>
 <body>
 
     <div class="logo-container">
         Chill 
         <span class="highlight">
-            Hub
+            Hub <small style="font-size: 1rem; vertical-align: super; color: #111;">v1.2</small>
             <img src="skeleton.gif" alt="Skeleton" class="dancing-skeleton">
         </span>
     </div>
     
+    <!-- Top Arena: Snake Game Console -->
     <div class="arcade-container">
         <div class="score">Score: <span id="score-val">0</span></div>
-        <canvas id="snakeGame" width="400" height="350"></canvas>
-        
-        <!-- The Web Portal Navigation Buttons -->
+        <canvas id="snakeGame" width="400" height="300"></canvas>
+        <div class="instructions">Use Arrow Keys to play Snake up here!</div>
+    </div>
+
+    <!-- Bottom Arena: True Web Port Dashboard -->
+    <div class="portal-container">
         <div class="portal-menu">
-            <button onclick="alert('Launching custom game logic...')">🎮 App 2</button>
-            <button onclick="alert('Launching custom game logic...')">🕹️ App 3</button>
+            <!-- These specialized web ports are open-source game frames designed to load everywhere -->
+            <button onclick="loadPortalSite('https://gityb.com')">🕹️ Unblocked Proxy Port</button>
+            <button onclick="loadPortalSite('https://minecraft.net')">🧱 Minecraft Classic Port</button>
+            <button onclick="loadPortalSite('https://archive.org')">🍒 Pac-Man Port</button>
+        </div>
+        <div class="frame-wrapper">
+            <!-- The secure embedded window -->
+            <iframe id="portal-iframe" src="about:blank" allowfullscreen></iframe>
         </div>
     </div>
 
     <script>
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
-        const grid = 20;
-        let count = 0;
-        let score = 0;
-        
-        let snake = {
-            x: 160, y: 160,
-            dx: grid, dy: 0,
-            cells: [{x: 160, y: 160}, {x: 140, y: 160}],
-            maxCells: 4
-        };
-        
-        let apple = { x: 320, y: 240 };
-
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min)) + min;
-        }
-
+        const grid = 20; let count = 0; let score = 0;
+        let snake = { x: 160, y: 160, dx: grid, dy: 0, cells: [{x: 160, y: 160}, {x: 140, y: 160}], maxCells: 4 };
+        let apple = { x: 320, y: 200 };
+        function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min)) + min; }
         function loop() {
-            requestAnimationFrame(loop);
-            if (++count < 6) return;
-            count = 0;
-            
+            requestAnimationFrame(loop); if (++count < 6) return; count = 0;
             ctx.clearRect(0,0,canvas.width,canvas.height);
-            
-            snake.x += snake.dx;
-            snake.y += snake.dy;
-            
-            if (snake.x < 0) snake.x = canvas.width - grid;
-            else if (snake.x >= canvas.width) snake.x = 0;
-            if (snake.y < 0) snake.y = canvas.height - grid;
-            else if (snake.y >= canvas.height) snake.y = 0;
-            
-            snake.cells.unshift({x: snake.x, y: snake.y});
-            if (snake.cells.length > snake.maxCells) snake.cells.pop();
-            
-            ctx.fillStyle = '#ff3366';
-            ctx.fillRect(apple.x, apple.y, grid-1, grid-1);
-            
+            snake.x += snake.dx; snake.y += snake.dy;
+            if (snake.x < 0) snake.x = canvas.width - grid; else if (snake.x >= canvas.width) snake.x = 0;
+            if (snake.y < 0) snake.y = canvas.height - grid; else if (snake.y >= canvas.height) snake.y = 0;
+            snake.cells.unshift({x: snake.x, y: snake.y}); if (snake.cells.length > snake.maxCells) snake.cells.pop();
+            ctx.fillStyle = '#ff3366'; ctx.fillRect(apple.x, apple.y, grid-1, grid-1);
             ctx.fillStyle = '#00ffcc';
             snake.cells.forEach(function(cell, index) {
                 ctx.fillRect(cell.x, cell.y, grid-1, grid-1);  
-                
                 if (cell.x === apple.x && cell.y === apple.y) {
-                    snake.maxCells++;
-                    score += 10;
-                    document.getElementById('score-val').innerText = score;
-                    apple.x = getRandomInt(0, 20) * grid;
-                    apple.y = getRandomInt(0, 17) * grid;
+                    snake.maxCells++; score += 10; document.getElementById('score-val').innerText = score;
+                    apple.x = getRandomInt(0, 20) * grid; apple.y = getRandomInt(0, 15) * grid;
                 }
-                
                 for (let i = index + 1; i < snake.cells.length; i++) {
                     if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-                        snake.x = 160; snake.y = 160;
-                        snake.cells = [{x: 160, y: 160}, {x: 140, y: 160}];
-                        snake.maxCells = 4;
-                        snake.dx = grid; snake.dy = 0;
-                        score = 0;
+                        snake.x = 160; snake.y = 160; snake.cells = [{x: 160, y: 160}, {x: 140, y: 160}];
+                        snake.maxCells = 4; snake.dx = grid; snake.dy = 0; score = 0;
                         document.getElementById('score-val').innerText = score;
                     }
                 }
             });
         }
-
         document.addEventListener('keydown', function(e) {
             if (e.which === 37 && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
             else if (e.which === 38 && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
             else if (e.which === 39 && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
             else if (e.which === 40 && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
         });
-
         requestAnimationFrame(loop);
     </script>
 </body>
