@@ -77,16 +77,22 @@
         
         .utility-screen {
             width: 100%;
-            height: 400px;
+            height: 500px;
             background-color: #111;
             border: 2px solid #333;
             border-radius: 6px;
             box-sizing: border-box;
             overflow: hidden;
             display: none;
-            position: relative;
         }
         .utility-screen.active { display: block; }
+
+        /* Web Port Frame Styling */
+        .game-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -109,25 +115,25 @@
     <!-- Bottom Console Module: Web Game Ports -->
     <div class="portal-container">
         <div class="portal-menu">
-            <button id="tab-pong" class="active" onclick="openPort('pong')">🏓 Pong Port</button>
-            <button id="tab-clicker" onclick="openPort('clicker')">鼠标 Retro Clicker</button>
+            <button id="tab-global" class="active" onclick="openPort('global')">🌐 Cloud Game Port</button>
+            <button id="tab-clicker" onclick="openPort('clicker')">🖱️ Retro Clicker</button>
         </div>
 
-        <!-- PORT 1: SCHOOL-SAFE PONG GAME (NO IFRAME) -->
-        <div id="port-pong" class="utility-screen active">
-            <p style="margin-top:10px; color:#00ffcc; font-weight:bold; margin-bottom: 0;">Unblocked Retro Pong Port</p>
-            <canvas id="pongGame" width="700" height="330" tabindex="0"></canvas>
+        <!-- PORT 1: CLOUDFRONT PIPELINE -->
+        <div id="port-global" class="utility-screen active">
+            <!-- This iframe loads your custom CloudFront link -->
+            <iframe class="game-frame" src="https://d3tecwpbnz01jy.cloudfront.net/" allowfullscreen></iframe>
         </div>
 
         <!-- PORT 2: CYBER CLICKER GAME -->
         <div id="port-clicker" class="utility-screen" style="padding: 20px; text-align: center;">
             <p style="margin-top:0; color:#00ffcc; font-weight:bold;">Neon Energy Clicker Port</p>
-            <div style="margin-top: 30px;">
+            <div style="margin-top: 50px;">
                 <h2 style="font-size: 2.5rem; color: #ff66b2; margin-bottom: 5px;">Energy: <span id="click-count">0</span></h2>
                 <p style="color: #888; margin-top: 0;">Energy Per Click: +<span id="click-power">1</span></p>
                 <button onclick="boopCore()" style="background: radial-gradient(#00ffcc, #00b386); border: none; width: 120px; height: 120px; border-radius: 50%; font-weight: bold; font-size: 1.2rem; color: #111; cursor: pointer; box-shadow: 0 0 15px #00ffcc; outline: none; margin-top: 10px;">CORE</button>
             </div>
-            <div style="margin-top: 30px;">
+            <div style="margin-top: 40px;">
                 <button id="upgrade-btn" onclick="buyUpgrade()" style="background-color: #ff66b2; color: white; border: none; padding: 10px 20px; font-weight: bold; border-radius: 4px; cursor: pointer;">Upgrade Clicker (Cost: 10 Energy)</button>
             </div>
         </div>
@@ -203,93 +209,26 @@
         requestAnimationFrame(loopSnake);
 
         // ==========================================
-        // 🏓 UNBLOCKED RETRO PONG ENGINE (Port 1)
+        // 🖱️ CYBER CLICKER ENGINE
         // ==========================================
-        const pongCanvas = document.getElementById("pongGame");
-        const pongCtx = pongCanvas.getContext("2d");
-        
-        let paddleW = 10, paddleH = 60;
-        let p1Y = (pongCanvas.height - paddleH) / 2;
-        let p2Y = (pongCanvas.height - paddleH) / 2;
-        let ballX = pongCanvas.width / 2, ballY = pongCanvas.height / 2;
-        let ballSize = 8;
-        let ballSpeedX = 4, ballSpeedY = 3;
-        let p1Score = 0, p2Score = 0;
-        pongCanvas.addEventListener("mousemove", function(e) {
-let rect = pongCanvas.getBoundingClientRect();
-p1Y = e.clientY - rect.top - paddleH / 2;
-});
-function loopPong() {
-requestAnimationFrame(loopPong);
-pongCtx.clearRect(0, 0, pongCanvas.width, pongCanvas.height);
-// Move AI Paddle (Right side)
-let p2Center = p2Y + paddleH / 2;
-if (p2Center < ballY - 15) p2Y += 3.5;
-else if (p2Center > ballY + 15) p2Y -= 3.5;
-// Move Ball
-ballX += ballSpeedX;
-ballY += ballSpeedY;
-// Wall bounces (Top / Bottom)
-if (ballY <= 0 || ballY >= pongCanvas.height - ballSize) ballSpeedY = -ballSpeedY;
-// Paddle 1 Collision (Player)
-if (ballX <= paddleW + 5) {
-if (ballY > p1Y && ballY < p1Y + paddleH) {
-ballSpeedX = -ballSpeedX;
-ballSpeedX *= 1.05; // speed up slightly
-} else if (ballX < 0) {
-p2Score++;
-resetBall();
-}
-}
-// Paddle 2 Collision (AI Computer)
-if (ballX >= pongCanvas.width - paddleW - 5 - ballSize) {
-if (ballY > p2Y && ballY < p2Y + paddleH) {
-ballSpeedX = -ballSpeedX;
-} else if (ballX > pongCanvas.width) {
-p1Score++;
-resetBall();
-}
-}
-function resetBall() {
-ballX = pongCanvas.width / 2;
-ballY = pongCanvas.height / 2;
-ballSpeedX = -ballSpeedX > 0 ? 4 : -4;
-ballSpeedY = 3;
-}
-// Draw Paddles
-pongCtx.fillStyle = "#ff66b2"; // Player Left
-pongCtx.fillRect(5, p1Y, paddleW, paddleH);
-pongCtx.fillStyle = "#ff007f"; // AI Right
-pongCtx.fillRect(pongCanvas.width - paddleW - 5, p2Y, paddleW, paddleH);
-// Draw Ball
-pongCtx.fillStyle = "#00ffcc";
-pongCtx.fillRect(ballX, ballY, ballSize, ballSize);
-// Draw Scores
-pongCtx.font = "20px Arial";
-pongCtx.fillStyle = "#ffffff";
-pongCtx.fillText(p1Score, pongCanvas.width / 4, 30);
-pongCtx.fillText(p2Score, (pongCanvas.width / 4) * 3, 30);
-}
-loopPong();
-// ==========================================
-// 鼠标 CYBER CLICKER ENGINE (Port 2)
-// ==========================================
-let energy = 0;
-let power = 1;
-let upgradeCost = 10;
-function boopCore() {
-energy += power;
-document.getElementById("click-count").innerText = energy;
-}
-function buyUpgrade() {
-if (energy >= upgradeCost) {
-energy -= upgradeCost;
-power += 1;
-upgradeCost = Math.floor(upgradeCost * 1.8);
-document.getElementById("click-count").innerText = energy;
-document.getElementById("click-power").innerText = power;
-document.getElementById("upgrade-btn").innerText = Upgrade Clicker (Cost: ${upgradeCost} Energy);
-} else {
+        let energy = 0;
+        let power = 1;
+        let upgradeCost = 10;
+
+        function boopCore() {
+            energy += power;
+            document.getElementById("click-count").innerText = energy;
+        }
+
+        function buyUpgrade() {
+            if (energy >= upgradeCost) {
+                energy -= upgradeCost;
+                power += 1;
+                upgradeCost = Math.floor(upgradeCost * 1.8);
+                document.getElementById("click-count").innerText = energy;
+    document.getElementById("click-power").innerText = power;
+    document.getElementById("upgrade-btn").innerText = Upgrade Clicker (Cost: ${upgradeCost} Energy);
+    } else {
 alert("Insufficient core energy!");
 }
 }
