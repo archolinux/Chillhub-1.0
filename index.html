@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chill Hub v1.3 - Ultimate Arcade Portal</title>
-    <!-- This link tag controls the little browser icon (favicon) -->
-    <link id="favicon" rel="icon" type="image/png" href="skeleton.gif">
     <style>
         body {
             margin: 0; padding: 0;
@@ -107,7 +105,7 @@
 
         <!-- PORT 2: NOAH'S CALCULUS TUTOR GITHUB PAGES -->
         <div id="port-noah" class="utility-screen">
-            <iframe class="game-frame" src="https://github.io" allowfullscreen></iframe>
+            <iframe class="game-frame" src="https://noahsamazingtutoringhelp.github.io/Noahs-Calculus-Tutor/" allowfullscreen></iframe>
         </div>
 
         <!-- PORT 3: CYBER CLICKER GAME -->
@@ -133,28 +131,6 @@
             document.getElementById('port-' + portName).classList.add('active');
             document.getElementById('tab-' + portName).classList.add('active');
         }
-
-        // ==========================================
-        // 🕵️‍♂️ TAB CLOAKING STEALTH SYSTEM
-        // ==========================================
-        const originalTitle = document.title;
-        const favicon = document.getElementById('favicon');
-        
-        // Link to a safe Google Docs icon address
-        const safeIcon = "https://gstatic.com";
-        const originalIcon = "skeleton.gif"; // Cleans up back to your asset when active
-
-        window.addEventListener('blur', function() {
-            // When you switch to a different tab, look like schoolwork!
-            document.title = "Google Docs";
-            favicon.setAttribute('href', safeIcon);
-        });
-
-        window.addEventListener('focus', function() {
-            // When you click back into Chill Hub, return to normal
-            document.title = originalTitle;
-            favicon.setAttribute('href', originalIcon);
-        });
 
         // ==========================================
         // 🖱️ CYBER CLICKER ENGINE
