@@ -85,7 +85,7 @@
     <div class="logo-container">
         Chill 
         <span class="highlight">
-            Hub <small style="font-size: 1rem; vertical-align: super; color: #111;">v1.3</small>
+            Hub <small style="font-size: 1rem; vertical-align: super; color: #111;">v1.4</small>
             <img src="skeleton.gif" alt="Skeleton" class="dancing-skeleton">
         </span>
     </div>
@@ -98,14 +98,14 @@
             <button id="tab-clicker" onclick="openPort('clicker')">🖱️ Retro Clicker</button>
         </div>
 
-        <!-- PORT 1: GEOMETRY DASH WEBPORT -->
+        <!-- PORT 1: SELF-CONTAINED GEOMETRY DASH WEBPORT -->
         <div id="port-cloud1" class="utility-screen active">
-            <iframe class="game-frame" src="https://theblehlollipop.itch.io/geometry-dash-webport" allowfullscreen></iframe>
+            <iframe id="gd-frame" class="game-frame" allowfullscreen></iframe>
         </div>
 
         <!-- PORT 2: NOAH'S CALCULUS TUTOR GITHUB PAGES -->
         <div id="port-noah" class="utility-screen">
-            <iframe class="game-frame" src="https://noahsamazingtutoringhelp.github.io/Noahs-Calculus-Tutor/" allowfullscreen></iframe>
+            <iframe class="game-frame" src="https://github.io" allowfullscreen></iframe>
         </div>
 
         <!-- PORT 3: CYBER CLICKER GAME -->
@@ -122,7 +122,21 @@
         </div>
     </div>
 
+    <!-- HIDDEN STORAGE FOR GEOMETRY DASH HTML -->
+    <textarea id="gd-source" style="display:none;">
+PASTE_DOWNLOADED_HTML_HERE
+    </textarea>
+
     <script>
+        // --- LOAD COMBINED GEOMETRY DASH PORT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const rawHtml = document.getElementById('gd-source').value.trim();
+            if (rawHtml && rawHtml !== 'PASTE_DOWNLOADED_HTML_HERE') {
+                const blob = new Blob([rawHtml], { type: 'text/html' });
+                document.getElementById('gd-frame').src = URL.createObjectURL(blob);
+            }
+        });
+
         // --- PORT SWITCHING PIPELINE ---
         function openPort(portName) {
             document.querySelectorAll('.utility-screen').forEach(el => el.classList.remove('active'));
