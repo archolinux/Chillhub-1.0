@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chill Hub 2.0</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+      body {
+        background-color: #190f1e;
+        background-image: linear-gradient(rgba(15, 10, 20, 0.45), rgba(15, 10, 20, 0.55)), url('bg.gif');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        color: #ffffff;
+        font-family: 'Trebuchet MS', sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 30px 15px;
+        min-height: 100vh;
+      }
+      .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      h1 {
+        font-family: 'Lobster', cursive;
+        font-size: 64px;
+        font-weight: normal;
+        color: #ffffff;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        text-shadow: 0 0 12px rgba(255, 105, 180, 0.9), 2px 3px 6px rgba(0, 0, 0, 0.5);
+      }
+      .hub-box {
+        background-color: #ff66c4;
+        color: #ffffff;
+        padding: 4px 22px 10px 18px;
+        border-radius: 16px;
+        box-shadow: 0 4px 18px rgba(255, 102, 196, 0.6);
+        display: inline-block;
+      }
+      .version-badge {
+        background-color: #ff69b4;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 6px 14px;
+        border-radius: 20px;
+        box-shadow: 0 0 10px #ff69b4;
+      }
+      .live-badge {
+        background-color: rgba(25, 15, 30, 0.9);
+        border: 1px solid #00e676;
+        color: #00e676;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 6px 14px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 0 10px rgba(0, 230, 118, 0.3);
+      }
+      .pulse-dot {
+        width: 9px;
+        height: 9px;
+        background-color: #00e676;
+        border-radius: 50%;
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 230, 118, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+      }
+      .top-btn {
+        background-color: #8a2be2;
+        color: #ffffff;
+        padding: 7px 16px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 0 12px #8a2be2;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .top-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 18px #ff66c4;
+      }
+      .subtitle {
+        color: #ffe4e1;
+        text-shadow: 1px 1px 4px #000000;
+        font-size: 18px;
+        margin-top: 8px;
+        margin-bottom: 25px;
+      }
+      .game-bar {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 25px;
+      }
+      .game-tab {
+        background-color: rgba(35, 20, 45, 0.9);
+        color: #ffb7c5;
+        border: 2px solid #ffb7c5;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .game-tab:hover, .game-tab.active {
+        background-color: #ffb7c5;
+        color: #1a0f24;
+        box-shadow: 0 0 15px #ff69b4;
+      }
+      .game-container {
+        background-color: rgba(25, 15, 30, 0.92);
+        border: 2px solid #ffb7c5;
+        box-shadow: 0 0 25px rgba(255, 105, 180, 0.5);
+        border-radius: 16px;
+        max-width: 900px;
+        margin: 0 auto 30px auto;
+        padding: 25px;
+      }
+      .game-title {
+        color: #ffd700;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        font-size: 26px;
+        margin-top: 0;
+        margin-bottom: 15px;
+      }
+      iframe {
+        width: 100%;
+        height: 540px;
+        border: 2px solid #ff69b4;
+        border-radius: 10px;
+        background-color: #000000;
+      }
+      .play-btn {
+        display: inline-block;
+        margin-top: 18px;
+        padding: 12px 28px;
+        background: linear-gradient(90deg, #ff69b4, #ffb7c5);
+        color: #1a0f24;
+        font-weight: bold;
+        text-decoration: none;
+        border-radius: 30px;
+        font-size: 16px;
+        box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+        transition: transform 0.2s;
+      }
+      .play-btn:hover {
+        transform: scale(1.05);
+      }
+      .updates-box {
+        background-color: rgba(25, 15, 30, 0.92);
+        border: 1px solid #ffb7c5;
+        border-radius: 12px;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 18px 25px;
+        text-align: left;
+      }
+      .updates-box h3 {
+        color: #ffb7c5;
+        margin-top: 0;
+        margin-bottom: 10px;
+      }
+      .updates-box ul {
+        color: #ffe4e1;
+        margin: 0;
+        padding-left: 20px;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="header">
+      <h1>Chill <span class="hub-box">Hub</span></h1>
+      <span class="version-badge">v2.0</span>
+      <div class="live-badge">
+        <span class="pulse-dot"></span>
+        <span>ONLINE • Visits: <span id="visit-count">1</span></span>
+      </div>
+      <a href="/os.html" class="top-btn">🖥️ Switch to Chill OS 2.0</a>
+      <button id="lag-btn" onclick="toggleLagFix()" class="top-btn" style="background:#ff66c4;">⚡ Lag Fix: OFF</button>
+    </div>
+    <p class="subtitle">Credits: Aaron (Designer) • Zaid (Coder) • Tony (Tester) Ted (First person to use CHillHub 2.0)</p>
+
+    <!-- GAME & SOUNDBOARD SWITCHER BUTTONS -->
+    <div class="game-bar">
+      <!-- BUTTON 1: GEOMETRY DASH -->
+      <button class="game-tab active" onclick="loadGame('Geometry Dash', 'https://pixelgrovejtm97.b-cdn.net/iframe.html?g=KsQAaoFHAgACPoVHRMgSfMwCUUxW', this)">Geometry Dash</button>
+      
+    </div>
+
+    <div class="game-container">
+      <h2 class="game-title" id="current-title">Geometry Dash</h2>
+      <iframe id="game-frame" src="https://pixelgrovejtm97.b-cdn.net/iframe.html?g=KsQAaoFHAgACPoVHRMgSfMwCUUxW" allowfullscreen></iframe>
+      <br>
+      <a id="fullscreen-btn" href="https://pixelgrovejtm97.b-cdn.net/iframe.html?g=KsQAaoFHAgACPoVHRMgSfMwCUUxW" target="_blank" class="play-btn">
+        Open Fullscreen in New Tab
+      </a>
+    </div>
+
+    <!-- CHANGELOG / UPDATES SECTION -->
+    <div class="updates-box">
+      <h3>Update Log</h3>
+      <ul>
+        <li><strong>v2.1:</strong> Added live Online &amp; Visits counter badge, 4 games, and a Soundboard tab!</li>
+        <li><strong>v2.0:</strong> Added Chill OS 2.0 desktop mode and the Lag Fix performance toggle.</li>
+        <li><strong>v1.0:</strong> Official launch with the Cherry Blossom theme, custom Chill Hub logo, game switcher, and team credits.</li>
+      </ul>
+    </div>
+
+    <script>
+      // Switch games/soundboard
+      function loadGame(title, url, btn) {
+        document.getElementById('current-title').innerText = title;
+        document.getElementById('game-frame').src = url;
+        document.getElementById('fullscreen-btn').href = url;
+
+        let tabs = document.querySelectorAll('.game-tab');
+        tabs.forEach(tab => tab.classList.remove('active'));
+        btn.classList.add('active');
+      }
+
+      // Lag Fix toggle
+      let lagFix = false;
+      function toggleLagFix() {
+        lagFix = !lagFix;
+        const btn = document.getElementById('lag-btn');
+        if (lagFix) {
+          document.body.style.backgroundImage = 'none';
+          btn.innerText = '⚡ Lag Fix: ON';
+          btn.style.background = '#00c853';
+        } else {
+          document.body.style.backgroundImage = "linear-gradient(rgba(15, 10, 20, 0.45), rgba(15, 10, 20, 0.55)), url('/bg.gif')";
+          btn.innerText = '⚡ Lag Fix: OFF';
+          btn.style.background = '#ff66c4';
+        }
+      }
+
+      // Live Visits Counter
+      let visits = localStorage.getItem('chillHubVisits') || 0;
+      visits = Number(visits) + 1;
+      localStorage.setItem('chillHubVisits', visits);
+      document.getElementById('visit-count').innerText = visits;
+    </script>
+
+  </body>
+</html>
